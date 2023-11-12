@@ -7,7 +7,7 @@
 --                                                --
 --================================================--
 
---v4.1.1
+--v4.1.3
 
 ---@alias KattArmor.ArmorPartID
 ---| '"Helmet"'
@@ -461,7 +461,6 @@ function events.TICK()
       if partData.prevMaterial and partData.prevMaterial.parts[partID] then
         for _, modelPart in ipairs(partData.prevMaterial.parts[partID]) do
           modelPart:setVisible(false)
-          print(modelPart)
         end
       end
 
@@ -476,9 +475,6 @@ function events.TICK()
         textureType = "CUSTOM"
       elseif type(texture) == "string" then
         textureType = "RESOURCE"
-      else
-        textureType = "PRIMARY"
-        --texture=nil
       end
 
       local texture_e = materialData.texture_e[partData.layer]
@@ -487,9 +483,6 @@ function events.TICK()
         textureType_e = "CUSTOM"
       elseif type(texture_e) == "string" then
         textureType_e = "RESOURCE"
-      else
-        textureType_e = "PRIMARY"
-        texture_e=nil
       end
 
       local color = vectors.intToRGB(
