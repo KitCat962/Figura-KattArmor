@@ -7,7 +7,7 @@
 --                                                --
 --================================================--
 
---v4.1.3
+--v4.1.4
 
 ---@alias KattArmor.ArmorPartID
 ---| '"Helmet"'
@@ -381,7 +381,7 @@ end
 
 ---@class KattArmor.TrimMaterial
 ---@field color Vector3
----@field textures table<KattArmor.TrimPatternID, table<KattArmor.ArmorPart.Layer, Texture|nil>>
+---@field textures table<KattArmor.TrimPatternID, table<KattArmor.ArmorPart.Layer|3|4, Texture|nil>>
 ---
 ---@field new fun():KattArmor.TrimMaterial
 local TrimMaterial = Class()
@@ -419,6 +419,27 @@ end
 function TrimMaterial:setTextureLayer2(trim, texture)
   if not self.textures[trim] then self.textures[trim] = {} end
   self.textures[trim][2] = texture
+  return self
+end
+
+---Sets the texture that will be used when the trimMaterialID matches the armorMaterialID
+---Only used when there is a custom texture applied via `TrimMaterial:setTexture`
+---@param trim KattArmor.TrimPatternID
+---@param texture Texture
+---@return self
+function TrimMaterial:setTextureDarker(trim, texture)
+  if not self.textures[trim] then self.textures[trim] = {} end
+  self.textures[trim][1+2] = texture
+  return self
+end
+
+---Sets the texture that will be used when the trimMaterialID matches the armorMaterialID
+---Only used when there is a custom texture applied via `TrimMaterial:setTextureLayer2`
+---@param texture Texture
+---@return self
+function TrimMaterial:setTextureDarkerLayer2(trim, texture)
+  if not self.textures[trim] then self.textures[trim] = {} end
+  self.textures[trim][2+2] = texture
   return self
 end
 
@@ -537,11 +558,18 @@ function events.TICK()
         local overrideTrimTexture = trimMaterialData.textures[trimPattern]
         if overrideTrimTexture and overrideTrimTexture[partData.layer] then
           trimTextureType = "CUSTOM"
-          trimTexture = overrideTrimTexture[partData.layer]
+          if localMaterialID == trimMaterial and overrideTrimTexture[partData.layer+2] then
+            trimTexture = overrideTrimTexture[partData.layer+2]
+          else
+            trimTexture = overrideTrimTexture[partData.layer]
+          end
         elseif trimPatternData.textures[partData.layer] then
           trimTextureType = "CUSTOM"
           trimTexture = trimPatternData.textures[partData.layer]
           trimColor = trimMaterialData.color
+          if localMaterialID == trimMaterial and trimColor then
+            trimColor = trimColor * 0.6
+          end
         elseif client:getAtlas(armorTrimAtlasPath) then
           trimTextureType = "RESOURCE"
           trimTexture = armorTrimAtlasPath
@@ -549,9 +577,9 @@ function events.TICK()
           local atlasDimensions = vec(atlas:getWidth(), atlas:getHeight())
           local atlasPattern, atlasMaterial = trimPattern, trimMaterial
           if partData.layer == 2 then atlasPattern = atlasPattern .. "_leggings" end
-          if materialID == atlasMaterial then
+          if localMaterialID == atlasMaterial then
             atlasMaterial = atlasMaterial .. "_darker"
-          elseif materialID == "golden" and atlasMaterial == "gold" then
+          elseif localMaterialID == "golden" and atlasMaterial == "gold" then
             atlasMaterial = atlasMaterial .. "_darker"
           end
           local spriteData = atlas:getSpriteUV(armorTrimSpritePath:format(atlasPattern, atlasMaterial))
