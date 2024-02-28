@@ -95,6 +95,7 @@ armorCat.Armor.Leggings:setLayer(1)
 armorCat.Materials.philza:setTexture(textures["cat.iron"]):setDefaultColor(vectors.rgbToInt(1, 0, 0)) -- of course I'm doing setColor shenanagains. I already spent 2 hours on this.
 
 -- trims. I got lazy, ok?
+-- When you set a texture for a trim, KattArmor will automatically set the color of the texture based on the material.
 armorCat.TrimPatterns.coast:setTexture(textures["cat.trim"])
 armorCat.TrimPatterns.dune:setTexture(textures["cat.trim"])
 armorCat.TrimPatterns.eye:setTexture(textures["cat.trim"])
@@ -112,7 +113,8 @@ armorCat.TrimPatterns.ward:setTexture(textures["cat.trim"])
 armorCat.TrimPatterns.wayfinder:setTexture(textures["cat.trim"])
 armorCat.TrimPatterns.wild:setTexture(textures["cat.trim"])
 
--- How to do specific textures for each pattern/materual combo, *and* the darker varient
+-- When the primitive method KattArmor uses for trim color doesnt suit your fancy, you can manually set the texture for each trim/pattern combo
+-- This will override the texture used for the base trim.
 armorCat.TrimMaterials.diamond
     :setTexture("raiser", textures["cat.trim_diamond"])
     :setTextureDarker("raiser", textures["cat.trim_diamond_darker"])

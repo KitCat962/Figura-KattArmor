@@ -76,6 +76,8 @@ kattArmor.Materials.leather
         models.model.LeftLeg.LeftBootLeather:setPrimaryTexture("RESOURCE", leather1)
     )
 
+-- This is compatiblity for a commonly used mod Minecraft Dungeons Armor
+-- You dont *need* to keep it, but its useful for those that use the mod
 local minecraftDungeonsMaterialMap = {
     ["archers"] = "archer",
     ["arctic_fox_armor"] = "arctic",
