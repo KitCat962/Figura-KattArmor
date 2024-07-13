@@ -245,8 +245,10 @@ end
 ---@return self
 function Material:addParts(armorPart, ...)
   if type(armorPart) == "ArmorPart" then armorPart = SlotID_ArmorPart_Map[armorPart.slot] end
-  if not ArmorPart_SlotID_Map[armorPart] then error(("%s (%s) is not a valid ArmorPartID."):format(
-    tostring(armorPart), type(armorPart))) end
+  if not ArmorPart_SlotID_Map[armorPart] then
+    error(("%s (%s) is not a valid ArmorPartID."):format(
+      tostring(armorPart), type(armorPart)))
+  end
   if not self.parts[armorPart] then self.parts[armorPart] = {} end
   local parts = table.pack(...)
   for i = 1, parts.n do
@@ -429,7 +431,7 @@ end
 ---@return self
 function TrimMaterial:setTextureDarker(trim, texture)
   if not self.textures[trim] then self.textures[trim] = {} end
-  self.textures[trim][1+2] = texture
+  self.textures[trim][1 + 2] = texture
   return self
 end
 
@@ -439,7 +441,7 @@ end
 ---@return self
 function TrimMaterial:setTextureDarkerLayer2(trim, texture)
   if not self.textures[trim] then self.textures[trim] = {} end
-  self.textures[trim][2+2] = texture
+  self.textures[trim][2 + 2] = texture
   return self
 end
 
@@ -558,8 +560,8 @@ function events.TICK()
         local overrideTrimTexture = trimMaterialData.textures[trimPattern]
         if overrideTrimTexture and overrideTrimTexture[partData.layer] then
           trimTextureType = "CUSTOM"
-          if localMaterialID == trimMaterial and overrideTrimTexture[partData.layer+2] then
-            trimTexture = overrideTrimTexture[partData.layer+2]
+          if localMaterialID == trimMaterial and overrideTrimTexture[partData.layer + 2] then
+            trimTexture = overrideTrimTexture[partData.layer + 2]
           else
             trimTexture = overrideTrimTexture[partData.layer]
           end
