@@ -572,10 +572,10 @@ function events.TICK()
           if localMaterialID == trimMaterial and trimColor then
             trimColor = trimColor * 0.6
           end
-        elseif client:getAtlas(armorTrimAtlasPath) then
+        elseif client.getAtlas(armorTrimAtlasPath) then
           trimTextureType = "RESOURCE"
           trimTexture = armorTrimAtlasPath
-          local atlas = client:getAtlas(armorTrimAtlasPath)
+          local atlas = client.getAtlas(armorTrimAtlasPath)
           local atlasDimensions = vec(atlas:getWidth(), atlas:getHeight())
           local atlasPattern, atlasMaterial = trimPattern, trimMaterial
           if partData.layer == 2 then atlasPattern = atlasPattern .. "_leggings" end
@@ -586,13 +586,8 @@ function events.TICK()
           end
           local spriteData = atlas:getSpriteUV(armorTrimSpritePath:format(atlasPattern, atlasMaterial))
           trimUV = matrices.mat3()
-              :scale(
-                64 / 1024,
-                32 / 1024
-              ):translate(
-                spriteData.x * (atlasDimensions.x / 64),
-                spriteData.y * (atlasDimensions.y / 64)
-              )
+              :scale((spriteData.zw_ - spriteData.xy_):add(0,0,1))
+              :translate(spriteData.xy)
         end
       end
       for _, modelPart in ipairs(partData.trimParts) do
