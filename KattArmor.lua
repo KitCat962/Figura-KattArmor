@@ -411,6 +411,7 @@ end
 ---@param texture Texture
 ---@return self
 function TrimMaterial:setTexture(trim, texture)
+  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
   if not self.textures[trim] then self.textures[trim] = {} end
   self.textures[trim][1] = texture
   return self
@@ -423,6 +424,7 @@ end
 ---@param texture Texture
 ---@return self
 function TrimMaterial:setTextureLayer2(trim, texture)
+  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
   if not self.textures[trim] then self.textures[trim] = {} end
   self.textures[trim][2] = texture
   return self
@@ -434,6 +436,7 @@ end
 ---@param texture Texture
 ---@return self
 function TrimMaterial:setTextureDarker(trim, texture)
+  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
   if not self.textures[trim] then self.textures[trim] = {} end
   self.textures[trim][1 + 2] = texture
   return self
@@ -444,6 +447,7 @@ end
 ---@param texture Texture
 ---@return self
 function TrimMaterial:setTextureDarkerLayer2(trim, texture)
+  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
   if not self.textures[trim] then self.textures[trim] = {} end
   self.textures[trim][2 + 2] = texture
   return self
