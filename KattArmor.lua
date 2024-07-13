@@ -277,6 +277,7 @@ end
 ---@param texture KattArmor.Material.Texture
 ---@return self
 function Material:setTexture(texture)
+  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
   self.texture[1] = texture
   return self
 end
@@ -285,6 +286,7 @@ end
 ---@param texture KattArmor.Material.Texture
 ---@return self
 function Material:setTextureLayer2(texture)
+  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
   self.texture[2] = texture
   return self
 end
@@ -293,6 +295,7 @@ end
 ---@param texture KattArmor.Material.Texture
 ---@return self
 function Material:setEmissiveTexture(texture)
+  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
   self.texture_e[1] = texture
   return self
 end
@@ -301,6 +304,7 @@ end
 ---@param texture KattArmor.Material.Texture
 ---@return self
 function Material:setEmissiveTextureLayer2(texture)
+  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
   self.texture_e[2] = texture
   return self
 end
