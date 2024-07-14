@@ -111,6 +111,7 @@ local SlotID_ArmorPart_Map = {
 ---@field layer KattArmor.ArmorPart.Layer
 ---@field slot KattArmor.ArmorPartSlot
 ---@field override KattArmor.MaterialID?
+---@field overrideTrimNamespace string?
 ---@field overrideTrimPattern KattArmor.TrimPatternID?
 ---@field overrideTrimMaterial KattArmor.TrimMaterialID?
 ---@field prevItem ItemStack
@@ -205,9 +206,11 @@ function ArmorPart:setMaterial(material)
 end
 
 ---Forces the trim with the material to render, ignoring whatever nbt data is present.
+---@param namespace string?
 ---@param trim KattArmor.TrimPatternID?
 ---@param material KattArmor.TrimMaterialID?
-function ArmorPart:setTrim(trim, material)
+function ArmorPart:setTrim(namespace, trim, material)
+  self.overrideTrimNamespace = namespace
   self.overrideTrimPattern = trim
   self.overrideTrimMaterial = material
 end
@@ -277,7 +280,11 @@ end
 ---@param texture KattArmor.Material.Texture
 ---@return self
 function Material:setTexture(texture)
-  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
+  if texture == nil then
+    error(
+      "Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",
+      2)
+  end
   self.texture[1] = texture
   return self
 end
@@ -286,7 +293,11 @@ end
 ---@param texture KattArmor.Material.Texture
 ---@return self
 function Material:setTextureLayer2(texture)
-  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
+  if texture == nil then
+    error(
+      "Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",
+      2)
+  end
   self.texture[2] = texture
   return self
 end
@@ -295,7 +306,11 @@ end
 ---@param texture KattArmor.Material.Texture
 ---@return self
 function Material:setEmissiveTexture(texture)
-  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
+  if texture == nil then
+    error(
+      "Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",
+      2)
+  end
   self.texture_e[1] = texture
   return self
 end
@@ -304,7 +319,11 @@ end
 ---@param texture KattArmor.Material.Texture
 ---@return self
 function Material:setEmissiveTextureLayer2(texture)
-  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
+  if texture == nil then
+    error(
+      "Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",
+      2)
+  end
   self.texture_e[2] = texture
   return self
 end
@@ -411,7 +430,11 @@ end
 ---@param texture Texture
 ---@return self
 function TrimMaterial:setTexture(trim, texture)
-  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
+  if texture == nil then
+    error(
+      "Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",
+      2)
+  end
   if not self.textures[trim] then self.textures[trim] = {} end
   self.textures[trim][1] = texture
   return self
@@ -424,7 +447,11 @@ end
 ---@param texture Texture
 ---@return self
 function TrimMaterial:setTextureLayer2(trim, texture)
-  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
+  if texture == nil then
+    error(
+      "Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",
+      2)
+  end
   if not self.textures[trim] then self.textures[trim] = {} end
   self.textures[trim][2] = texture
   return self
@@ -436,7 +463,11 @@ end
 ---@param texture Texture
 ---@return self
 function TrimMaterial:setTextureDarker(trim, texture)
-  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
+  if texture == nil then
+    error(
+      "Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",
+      2)
+  end
   if not self.textures[trim] then self.textures[trim] = {} end
   self.textures[trim][1 + 2] = texture
   return self
@@ -447,7 +478,11 @@ end
 ---@param texture Texture
 ---@return self
 function TrimMaterial:setTextureDarkerLayer2(trim, texture)
-  if texture == nil then error("Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",2) end
+  if texture == nil then
+    error(
+      "Expected a ResourceID, a Texture, or false. Recieved nil. Make sure the texture path is correct.",
+      2)
+  end
   if not self.textures[trim] then self.textures[trim] = {} end
   self.textures[trim][2 + 2] = texture
   return self
@@ -466,8 +501,8 @@ end
 ---@field private _renderCallbacks KattArmor.onRenderCallback[]
 
 local prevItems = {}
-local armorTexturePath = "minecraft:textures/models/armor/%s_layer_%s.png"
-local armorTrimSpritePath = "minecraft:trims/models/armor/%s_%s"
+local armorTexturePath = "%s:textures/models/armor/%s_layer_%s.png"
+local armorTrimSpritePath = "%s:trims/models/armor/%s_%s"
 local armorTrimAtlasPath = "minecraft:textures/atlas/armor_trims.png"
 function events.TICK()
   for slot = 6, 3, -1 do
@@ -550,13 +585,15 @@ function events.TICK()
         end
       end
 
-      ---@type KattArmor.TrimPatternID, KattArmor.TrimMaterialID
-      local trimPattern, trimMaterial
+      ---@type string, KattArmor.TrimPatternID, KattArmor.TrimMaterialID
+      local trimNamespace, trimPattern, trimMaterial
       if partData.overrideTrimPattern and partData.overrideTrimMaterial then
-        trimPattern, trimMaterial = partData.overrideTrimPattern, partData.overrideTrimMaterial
+        trimNamespace, trimPattern, trimMaterial =
+            partData.overrideTrimNamespace or "minecraft", partData.overrideTrimPattern,
+            partData.overrideTrimMaterial
       elseif item.tag and item.tag.Trim and item.tag.Trim.pattern and item.tag.Trim.material then
-        trimPattern, trimMaterial =
-            item.tag.Trim.pattern:match("^.+:(.+)$"), item.tag.Trim.material:match("^.+:(.+)$")
+        trimNamespace, trimPattern = item.tag.Trim.pattern:match("^(.+):(.+)$")
+        trimMaterial = item.tag.Trim.material:match("^.+:(.+)$")
       end
 
       local trim = (trimPattern and trimMaterial) and true or false
@@ -592,9 +629,9 @@ function events.TICK()
           elseif localMaterialID == "golden" and atlasMaterial == "gold" then
             atlasMaterial = atlasMaterial .. "_darker"
           end
-          local spriteData = atlas:getSpriteUV(armorTrimSpritePath:format(atlasPattern, atlasMaterial))
+          local spriteData = atlas:getSpriteUV(armorTrimSpritePath:format(trimNamespace, atlasPattern, atlasMaterial))
           trimUV = matrices.mat3()
-              :scale((spriteData.zw_ - spriteData.xy_):add(0,0,1))
+              :scale((spriteData.zw_ - spriteData.xy_):add(0, 0, 1))
               :translate(spriteData.xy)
         end
       end
@@ -637,17 +674,17 @@ local materialsMetatable = {
   __index = function(self, index)
     local newMaterial = Material:new()
     if type(index) == "string" then
-      local t = armorTexturePath:format(index, "1")
+      local t = armorTexturePath:format("minecraft", index, "1")
       if client.hasResource(t) then
         newMaterial:setTexture(t)
-        local t2 = armorTexturePath:format(index, "2")
+        local t2 = armorTexturePath:format("minecraft", index, "2")
         if client.hasResource(t2) then
           newMaterial:setTextureLayer2(t2)
         end
-        local t_e = armorTexturePath:format(index, "1_e")
+        local t_e = armorTexturePath:format("minecraft", index, "1_e")
         if client.hasResource(t_e) then
           newMaterial:setEmissiveTexture(t_e)
-          local t2_e = armorTexturePath:format(index, "2_e")
+          local t2_e = armorTexturePath:format("minecraft", index, "2_e")
           if client.hasResource(t2_e) then
             newMaterial:setEmissiveTextureLayer2(t2_e)
           end
