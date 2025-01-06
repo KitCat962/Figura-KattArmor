@@ -76,17 +76,18 @@ end
 
 ---@type KattArmor.Instance[]
 local instances = {}
+---@alias KattArmor.onRenderCallback fun(materialID:KattArmor.MaterialID, partID:KattArmor.ArmorPartID, item:ItemStack, visible:boolean, renderType:"EMISSIVE"|"GLINT", color:Vector3, texture:KattArmor.Material.Texture, textureType:"RESOURCE"|"CUSTOM"|nil, texture_e:KattArmor.Material.Texture, textureType_e:"RESOURCE"|"CUSTOM"|nil,damageOverlay:0|nil, trim:boolean, trimPattern:KattArmor.TrimPatternID?, trimMaterial:KattArmor.TrimMaterialID?, trimTexture:KattArmor.Material.Texture?, trimTextureType:"RESOURCE"|"CUSTOM"|nil, trimColor:Vector3?, trimUV:Matrix3?)
+local update = true
+local function forceUpdate()
+  update = true
+end
 ---@alias KattArmor.onChangeCallback fun(partID:KattArmor.ArmorPartID, item:ItemStack):KattArmor.MaterialID?
 ---@type KattArmor.onChangeCallback[]
 local changeCallbacks = {}
 ---@param fn KattArmor.onChangeCallback
 local function registerOnChange(fn)
   table.insert(changeCallbacks, fn)
-end
----@alias KattArmor.onRenderCallback fun(materialID:KattArmor.MaterialID, partID:KattArmor.ArmorPartID, item:ItemStack, visible:boolean, renderType:"EMISSIVE"|"GLINT", color:Vector3, texture:KattArmor.Material.Texture, textureType:"RESOURCE"|"CUSTOM"|nil, texture_e:KattArmor.Material.Texture, textureType_e:"RESOURCE"|"CUSTOM"|nil,damageOverlay:0|nil, trim:boolean, trimPattern:KattArmor.TrimPatternID?, trimMaterial:KattArmor.TrimMaterialID?, trimTexture:KattArmor.Material.Texture?, trimTextureType:"RESOURCE"|"CUSTOM"|nil, trimColor:Vector3?, trimUV:Matrix3?)
-local update = true
-local function forceUpdate()
-  update = true
+  forceUpdate()
 end
 ---@type table<KattArmor.ArmorPartID, KattArmor.ArmorPartSlot>
 local ArmorPart_SlotID_Map = {
@@ -143,6 +144,7 @@ function ArmorPart:addParts(...)
     end
     table.insert(self.parts, part)
   end
+  forceUpdate()
   return self
 end
 
@@ -181,6 +183,7 @@ function ArmorPart:addTrimParts(...)
     end
     table.insert(self.trimParts, part)
   end
+  forceUpdate()
   return self
 end
 
@@ -192,6 +195,7 @@ end
 function ArmorPart:setLayer(layer)
   if layer ~= 2 then layer = 1 end
   self.layer = layer
+  forceUpdate()
   return self
 end
 
@@ -202,6 +206,7 @@ function ArmorPart:setMaterial(material)
   if material ~= self.override then
     self.override = material
   end
+  forceUpdate()
   return self
 end
 
@@ -209,10 +214,13 @@ end
 ---@param namespace string?
 ---@param trim KattArmor.TrimPatternID?
 ---@param material KattArmor.TrimMaterialID?
+---@return self
 function ArmorPart:setTrim(namespace, trim, material)
   self.overrideTrimNamespace = namespace
   self.overrideTrimPattern = trim
   self.overrideTrimMaterial = material
+  forceUpdate()
+  return self
 end
 
 ---@alias KattArmor.Material.Texture Texture | string | nil
@@ -264,6 +272,7 @@ function Material:addParts(armorPart, ...)
     end
     table.insert(self.parts[armorPart], part:setVisible(false))
   end
+  forceUpdate()
   return self
 end
 
@@ -273,6 +282,7 @@ end
 ---@return self
 function Material:setVisible(visible)
   self.visible = visible
+  forceUpdate()
   return self
 end
 
@@ -286,6 +296,7 @@ function Material:setTexture(texture)
       2)
   end
   self.texture[1] = texture
+  forceUpdate()
   return self
 end
 
@@ -299,6 +310,7 @@ function Material:setTextureLayer2(texture)
       2)
   end
   self.texture[2] = texture
+  forceUpdate()
   return self
 end
 
@@ -312,6 +324,7 @@ function Material:setEmissiveTexture(texture)
       2)
   end
   self.texture_e[1] = texture
+  forceUpdate()
   return self
 end
 
@@ -325,6 +338,7 @@ function Material:setEmissiveTextureLayer2(texture)
       2)
   end
   self.texture_e[2] = texture
+  forceUpdate()
   return self
 end
 
@@ -334,6 +348,7 @@ end
 ---@return self
 function Material:setForceGlint(glint)
   self.forceGlint = glint
+  forceUpdate()
   return self
 end
 
@@ -343,6 +358,7 @@ end
 ---@return self
 function Material:setShouldUseColor(bool)
   self.shouldUseColor = bool
+  forceUpdate()
   return self
 end
 
@@ -352,6 +368,7 @@ end
 ---@return self
 function Material:setDefaultColor(color)
   self.defaultColor = color
+  forceUpdate()
   return self
 end
 
@@ -361,6 +378,7 @@ end
 ---@return self
 function Material:setMaterialPartsColorChange(bool)
   self.materialPartsColor = bool
+  forceUpdate()
   return self
 end
 
@@ -370,6 +388,7 @@ end
 ---@return self
 function Material:setDamageOverlay(bool)
   self.damageOverlay = bool
+  forceUpdate()
   return self
 end
 
@@ -390,6 +409,7 @@ end
 ---@return self
 function TrimPattern:setTexture(texture)
   self.textures[1] = texture
+  forceUpdate()
   return self
 end
 
@@ -401,6 +421,7 @@ end
 ---@return self
 function TrimPattern:setTextureLayer2(texture)
   self.textures[2] = texture
+  forceUpdate()
   return self
 end
 
@@ -420,6 +441,7 @@ end
 ---@return self
 function TrimMaterial:setColor(color)
   self.color:set(color or vec(1, 1, 1))
+  forceUpdate()
   return self
 end
 
@@ -437,6 +459,7 @@ function TrimMaterial:setTexture(trim, texture)
   end
   if not self.textures[trim] then self.textures[trim] = {} end
   self.textures[trim][1] = texture
+  forceUpdate()
   return self
 end
 
@@ -454,6 +477,7 @@ function TrimMaterial:setTextureLayer2(trim, texture)
   end
   if not self.textures[trim] then self.textures[trim] = {} end
   self.textures[trim][2] = texture
+  forceUpdate()
   return self
 end
 
@@ -470,6 +494,7 @@ function TrimMaterial:setTextureDarker(trim, texture)
   end
   if not self.textures[trim] then self.textures[trim] = {} end
   self.textures[trim][1 + 2] = texture
+  forceUpdate()
   return self
 end
 
@@ -485,6 +510,7 @@ function TrimMaterial:setTextureDarkerLayer2(trim, texture)
   end
   if not self.textures[trim] then self.textures[trim] = {} end
   self.textures[trim][2 + 2] = texture
+  forceUpdate()
   return self
 end
 
@@ -756,6 +782,7 @@ return function()
   ---@param fn KattArmor.onRenderCallback
   function instance.registerOnRender(fn)
     table.insert(instance._renderCallbacks, fn)
+    forceUpdate()
   end
 
   table.insert(instances, instance)
