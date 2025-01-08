@@ -699,7 +699,7 @@ local armorMetatable = {
 local materialsMetatable = {
   __index = function(self, index)
     local newMaterial = Material:new()
-    if type(index) == "string" then
+    if type(index) == "string" and index:match("^[a-z0-9%/%-%_%.]+$") then
       local t = armorTexturePath:format("minecraft", index, "1")
       if client.hasResource(t) then
         newMaterial:setTexture(t)
