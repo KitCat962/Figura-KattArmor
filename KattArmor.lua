@@ -604,7 +604,7 @@ function events.TICK()
         local materialPartsColor = materialData.materialPartsColor and color or 0xFFFFFF
         for _, modelPart in ipairs(materialData.parts[partID]) do
           modelPart
-              :setVisible()
+              :setVisible(true)
               :setSecondaryRenderType(renderType)
               :setColor(materialPartsColor)
               :setOverlay(damageOverlay, 15)
