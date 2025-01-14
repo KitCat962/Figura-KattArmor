@@ -528,6 +528,7 @@ end
 
 local prevItems = {}
 local armorTexturePath = "%s:textures/models/armor/%s_layer_%s.png"
+local armorTexturePath1_21_3 = "%s:textures/entity/equipment/%s/%s.png"
 local armorTrimSpritePath = "%s:trims/models/armor/%s_%s"
 local armorTrimAtlasPath = "minecraft:textures/atlas/armor_trims.png"
 function events.TICK()
@@ -701,6 +702,7 @@ local materialsMetatable = {
     local newMaterial = Material:new()
     if type(index) == "string" and index:match("^[a-z0-9%/%-%_%.]+$") then
       local t = armorTexturePath:format("minecraft", index, "1")
+      local t1_21_3 = armorTexturePath1_21_3:format("minecraft", "humanoid", index)
       if client.hasResource(t) then
         newMaterial:setTexture(t)
         local t2 = armorTexturePath:format("minecraft", index, "2")
@@ -714,6 +716,12 @@ local materialsMetatable = {
           if client.hasResource(t2_e) then
             newMaterial:setEmissiveTextureLayer2(t2_e)
           end
+        end
+      elseif client.hasResource(t1_21_3) then
+        newMaterial:setTexture(t1_21_3)
+        local t1_21_3_2 = armorTexturePath:format("minecraft", "humanoid_leggings", index)
+        if client.hasResource(t1_21_3_2) then
+          newMaterial:setTextureLayer2(t1_21_3_2)
         end
       end
     end
