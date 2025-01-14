@@ -530,6 +530,7 @@ local prevItems = {}
 local armorTexturePath = "%s:textures/models/armor/%s_layer_%s.png"
 local armorTexturePath1_21_3 = "%s:textures/entity/equipment/%s/%s.png"
 local armorTrimSpritePath = "%s:trims/models/armor/%s_%s"
+local armorTrimSpritePath1_21_3 = "%s:trims/entity/%s/%s_%s"
 local armorTrimAtlasPath = "minecraft:textures/atlas/armor_trims.png"
 function events.TICK()
   for slot = 6, 3, -1 do
@@ -656,10 +657,16 @@ function events.TICK()
           elseif localMaterialID == "golden" and atlasMaterial == "gold" then
             atlasMaterial = atlasMaterial .. "_darker"
           end
-          local spriteData = atlas:getSpriteUV(armorTrimSpritePath:format(trimNamespace, atlasPattern, atlasMaterial))
+          local spriteData
+          local t = armorTrimSpritePath:format(trimNamespace, atlasPattern, atlasMaterial)
+          if client.hasResource(t) then
+            spriteData = atlas:getSpriteUV(t)
+          else
+            spriteData = atlas:getSpriteUV(armorTrimSpritePath1_21_3:format(trimNamespace, partData.layer==2 and "humanoid_leggings" or "humanoid", trimPattern, atlasMaterial))
+          end
           trimUV = matrices.mat3()
-              :scale((spriteData.zw_ - spriteData.xy_):add(0, 0, 1))
-              :translate(spriteData.xy)
+                :scale((spriteData.zw_ - spriteData.xy_):add(0, 0, 1))
+                :translate(spriteData.xy)
         end
       end
       for _, modelPart in ipairs(partData.trimParts) do
@@ -719,7 +726,7 @@ local materialsMetatable = {
         end
       elseif client.hasResource(t1_21_3) then
         newMaterial:setTexture(t1_21_3)
-        local t1_21_3_2 = armorTexturePath:format("minecraft", "humanoid_leggings", index)
+        local t1_21_3_2 = armorTexturePath1_21_3:format("minecraft", "humanoid_leggings", index)
         if client.hasResource(t1_21_3_2) then
           newMaterial:setTextureLayer2(t1_21_3_2)
         end
