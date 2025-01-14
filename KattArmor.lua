@@ -657,11 +657,9 @@ function events.TICK()
           elseif localMaterialID == "golden" and atlasMaterial == "gold" then
             atlasMaterial = atlasMaterial .. "_darker"
           end
-          local spriteData
-          local t = armorTrimSpritePath:format(trimNamespace, atlasPattern, atlasMaterial)
-          if client.hasResource(t) then
-            spriteData = atlas:getSpriteUV(t)
-          else
+          local missingnoSpriteData = atlas:getSpriteUV('missingno')
+          local spriteData = atlas:getSpriteUV(armorTrimSpritePath:format(trimNamespace, atlasPattern, atlasMaterial))
+          if spriteData==missingnoSpriteData then
             spriteData = atlas:getSpriteUV(armorTrimSpritePath1_21_3:format(trimNamespace, partData.layer==2 and "humanoid_leggings" or "humanoid", trimPattern, atlasMaterial))
           end
           trimUV = matrices.mat3()
