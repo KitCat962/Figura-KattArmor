@@ -7,7 +7,7 @@
 --                                                --
 --================================================--
 
---v4.2.5
+--v4.2.6
 
 ---@alias KattArmor.ArmorPartID
 ---| '"Helmet"'
@@ -620,8 +620,16 @@ function events.TICK()
             partData.overrideTrimNamespace or "minecraft", partData.overrideTrimPattern,
             partData.overrideTrimMaterial
       elseif item.tag and item.tag.Trim and item.tag.Trim.pattern and item.tag.Trim.material then
-        trimNamespace, trimPattern = item.tag.Trim.pattern:match("^(.+):(.+)$")
-        trimMaterial = item.tag.Trim.material:match("^.+:(.+)$")
+        if(item.tag.Trim.pattern:find(':', nil, true)) then
+          trimNamespace, trimPattern = item.tag.Trim.pattern:match("^(.+):(.+)$")
+        else
+          trimNamespace, trimPattern = 'minecraft', item.tag.Trim.pattern
+        end
+        if(item.tag.Trim.pattern:find(':', nil, true)) then
+          trimMaterial = item.tag.Trim.material:match("^.+:(.+)$")
+        else
+          trimMaterial =item.tag.Trim.material
+        end
       end
 
       local trim = (trimPattern and trimMaterial) and true or false
